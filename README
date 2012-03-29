@@ -1,0 +1,3 @@
+<cfx_PrintTextFile 
+	FILENAME = "C:\Users\brij\Desktop\zebra.txt" 
+    debug="On">
