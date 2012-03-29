@@ -1,3 +1,4 @@
 <cfx_PrintTextFile 
 	FILENAME = "<!-- COMPLETE FILE PATH HERE -->" 
+	PRINTERNAME = "<!-- Printer Name Here -->"
     debug="On">
