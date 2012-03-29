@@ -33,17 +33,30 @@ public class PrintTextFile implements CustomTag {
   public void processRequest( Request request, Response response ) 
     throws Exception { 
 	String FILE_NAME = request.getAttribute("FILENAME");
+	String PRINTER_NAME = request.getAttribute("PRINTERNAME");
 	response.writeDebug(FILE_NAME);
 	PrintService pservice[] = PrinterJob.lookupPrintServices();
-	String defaultPrinter = pservice[1].getName();
+	
     //String defaultPrinter = PrintServiceLookup.lookupDefaultPrintService().getName();
     //System.out.println("Default printer: " + defaultPrinter);
-	response.writeDebug("Default printer: " + defaultPrinter);
-
     //PrintService service = PrintServiceLookup.lookupDefaultPrintService();
+	//PrintService service[] = PrinterJob.lookupPrintServices();
 	
-	PrintService service[] = PrinterJob.lookupPrintServices();
-
+	int indexOfDefaultPrinter;
+	indexOfDefaultPrinter = 1 ;
+	
+	for (int i=1; i< pservice.length; i++)
+		{
+			if(pservice[i].getName().indexOf(PRINTER_NAME) != -1)
+				{
+					indexOfDefaultPrinter = i;
+				}
+		}
+	
+	response.writeDebug("Index Of Default printer: " + indexOfDefaultPrinter);
+	String defaultPrinter = pservice[indexOfDefaultPrinter].getName();
+	response.writeDebug("Default printer: " + defaultPrinter);
+	
     FileInputStream in = new FileInputStream(new File(FILE_NAME));
 
     PrintRequestAttributeSet  pras = new HashPrintRequestAttributeSet();
@@ -52,7 +65,7 @@ public class PrintTextFile implements CustomTag {
 
     DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
     Doc doc = new SimpleDoc(in, flavor, null);
-    DocPrintJob job = pservice[1].createPrintJob();
+    DocPrintJob job = pservice[indexOfDefaultPrinter].createPrintJob();
     PrintJobWatcher pjw = new PrintJobWatcher(job);
     job.print(doc, pras);
     pjw.waitForDone();
@@ -61,7 +74,7 @@ public class PrintTextFile implements CustomTag {
     // send FF to eject the page
     InputStream ff = new ByteArrayInputStream("\f".getBytes());
     Doc docff = new SimpleDoc(ff, flavor, null);
-    DocPrintJob jobff = pservice[1].createPrintJob();
+    DocPrintJob jobff = pservice[indexOfDefaultPrinter].createPrintJob();
     pjw = new PrintJobWatcher(jobff);
     jobff.print(docff, null);
     pjw.waitForDone();
